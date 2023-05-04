@@ -23,7 +23,7 @@ jobs:
         pip install setuptools wheel
 
     - name: Build distribution
-      run: python setup.py sdist bdist_wheelname: Publish to PyPI
+      run: python setup.py sdist bdist_wheel
 
 on:
   push:
