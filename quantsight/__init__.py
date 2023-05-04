@@ -1,1 +1,1 @@
-from client import QuantsightClient as Quantsight
+from .client import QuantsightClient as Quantsight

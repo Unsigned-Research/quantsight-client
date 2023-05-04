@@ -10,7 +10,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pandas",
-        "langchain"
+        "langchain",
+        "data-cache"
     ],
     python_requires=">=3.6",
     long_description=long_description,
