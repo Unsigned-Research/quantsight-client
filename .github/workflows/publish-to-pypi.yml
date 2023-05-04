@@ -30,12 +30,8 @@ jobs:
     - name: Bump version
       run: bump2version --verbose patch
 
-    - name: Commit new version
+    - name: Push new version and tags
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add .bumpversion.cfg setup.py
-        git diff --cached --quiet || git commit -m "Bump version: $(cat .bumpversion.cfg | grep current_version | awk '{split($0,a," = "); print a[2]}') → $(bump2version --dry-run --list patch | grep new_version= | awk '{split($0,a,"="); print a[2]}')"
         git push
         git push --tags
 
