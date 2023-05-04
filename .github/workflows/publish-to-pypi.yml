@@ -25,14 +25,14 @@ jobs:
     - name: Bump version
       run: bump2version --verbose patch
 
-    - name: Commit new version
+    - name: Commit new version and push
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git commit -am "Bump version"
-
-    - name: Push new version
-      run: git push
+        git add .bumpversion.cfg setup.py
+        git commit -m "Bump version: $(cat .bumpversion.cfg | grep current_version | awk '{split($0,a," = "); print a[2]}') → $(bump2version --dry-run --list patch | grep new_version= | awk '{split($0,a,"="); print a[2]}')"
+        git push
+        git push --tags
 
     - name: Build distribution
       run: python setup.py sdist bdist_wheel
