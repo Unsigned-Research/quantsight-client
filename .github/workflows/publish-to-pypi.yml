@@ -30,16 +30,20 @@ jobs:
     - name: Bump version
       run: bump2version --verbose patch
 
-    - name: Push new version and tags
+    - name: Commit new version
       run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .bumpversion.cfg setup.py
+        git commit -m "Bump version: $(cat .bumpversion.cfg | grep current_version | awk '{split($0,a," = "); print a[2]}') → $(bump2version --dry-run --list patch | grep new_version= | awk '{split($0,a,"="); print a[2]}')"
         git push
         git push --tags
 
     - name: Build distribution
-      run: python setup.py sdist bdist
-    
+      run: python setup.py sdist bdist_wheel
+
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+       
