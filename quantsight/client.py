@@ -5,7 +5,7 @@ from typing import Optional
 from datetime import datetime
 
 
-class Quantsight:
+class QuantsightClient:
     def __init__(self, api_key: str):
         self.base_url = "https://api.quantsight.dev"
         self.headers = {"Authorization": f"Bearer {api_key}"}
