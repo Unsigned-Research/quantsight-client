@@ -8,6 +8,11 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    env:
+      GIT_AUTHOR_NAME: "GitHub Action"
+      GIT_AUTHOR_EMAIL: "action@github.com"
+      GIT_COMMITTER_NAME: "GitHub Action"
+      GIT_COMMITTER_EMAIL: "action@github.com"
     steps:
     - name: Check out the repository
       uses: actions/checkout@v2
@@ -27,8 +32,6 @@ jobs:
 
     - name: Commit new version and push
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
         git add .bumpversion.cfg setup.py
         git commit -m "Bump version: $(cat .bumpversion.cfg | grep current_version | awk '{split($0,a," = "); print a[2]}') → $(bump2version --dry-run --list patch | grep new_version= | awk '{split($0,a,"="); print a[2]}')"
         git push
