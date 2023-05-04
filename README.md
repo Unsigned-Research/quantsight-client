@@ -1,9 +1,6 @@
-
+[![Publish to PyPI](https://github.com/Unsigned-Research/quantsight-client/actions/workflows/publish-to-pypi.yml/badge.svg?branch=master)](https://github.com/Unsigned-Research/quantsight-client/actions/workflows/publish-to-pypi.yml) [![PyPI version](https://badge.fury.io/py/quantsight.svg)](https://badge.fury.io/py/quantsight)
 
 <img height="60" src="https://www.quantsight.dev/static/media/trades.2cd0b7149637f5303dd5.png"/>
-
-[![Publish to PyPI](https://github.com/Unsigned-Research/quantsight-client/actions/workflows/publish-to-pypi.yml/badge.svg)](https://github.com/Unsigned-Research/quantsight-client/actions/workflows/publish-to-pypi.yml)
-# Quantsight Data API Python Client
 
 This is a Python client for the Quantsight Data API, which allows you to fetch historical funding rates, candle data, and perform custom queries from supported exchanges. The client is easy to use and supports fetching data into a Pandas DataFrame for further analysis.
 
