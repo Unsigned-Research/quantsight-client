@@ -11,7 +11,9 @@ setup(
     install_requires=[
         "pandas",
         "langchain",
-        "data-cache"
+        "data-cache",
+        "openai",
+        "tabulate"
     ],
     python_requires=">=3.6",
     long_description=long_description,

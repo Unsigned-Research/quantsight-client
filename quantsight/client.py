@@ -1,31 +1,32 @@
-import os
-
 import requests
 import pandas as pd
 import json
 from typing import Optional
 from datetime import datetime, timezone
-from data_cache import pandas_cache
+from data_cache import pandas_cache, read_metadata
 from pathlib import Path
 import os
+import shutil
+from .agent import QueryAgent
 
 
-class QuantsightClient:
-    def __init__(
-            self,
-            api_key: str,
-            openai_api_key: str = None,
-            cache_path: Path = None
-    ):
-        self.base_url = "https://api.quantsight.dev"
+class QuantsightClient(QueryAgent):
+    def __init__(self, api_key: str, openai_api_key: str = None, cache_path: Path = None, **kwargs):
+        super().__init__(openai_api_key, **kwargs)
+        self.base_url = "http://127.0.0.1:8000"
+        # self.base_url = "https://api.quantsight.dev"
         self.headers = {"Authorization": f"Bearer {api_key}"}
 
         file_location = Path(__file__).resolve().parent
 
-        if cache_path is None:
-            cache_path = file_location
+        self.cache_path = cache_path
+        if self.cache_path is None:
+            self.cache_path = file_location
+        self.cache_path = self.cache_path / "temp"
 
-        os.environ["CACHE_PATH"] = str(cache_path)
+        self.cache_path.mkdir(parents=True, exist_ok=True)
+
+        os.environ["CACHE_PATH"] = str(self.cache_path)
 
     def _request(
             self,
@@ -46,11 +47,17 @@ class QuantsightClient:
 
         return df
 
+    def clear_cache(self):
+        os.remove(self.cache_path / "data.h5")
+
+    def read_cache_metadata(self):
+        return read_metadata(str(self.cache_path / "data.h5"))
+
     @pandas_cache
     def get_funding_rate(
             self,
             from_ts: datetime = datetime(2010, 1, 1, tzinfo=timezone.utc),
-            to_ts: datetime = datetime.now(tz=timezone.utc),
+            to_ts: datetime = datetime(2023, 5, 1, tzinfo=timezone.utc),
             exchange: str = "okx",
             limit: int = 100,
             ticker: Optional[str] = None
@@ -68,7 +75,7 @@ class QuantsightClient:
     def get_ohlcv(
             self,
             from_ts: datetime = datetime(2010, 1, 1, tzinfo=timezone.utc),
-            to_ts: datetime = datetime.now(tz=timezone.utc),
+            to_ts: datetime = datetime(2023, 5, 1, tzinfo=timezone.utc),
             exchange: str = "okx",
             period: str = "1d",
             instrument: str = "swap",
@@ -85,6 +92,20 @@ class QuantsightClient:
             "ticker": ticker,
         }
         return self._request("/get_ohlcv", payload)
+
+    @pandas_cache
+    def custom_query(
+            self,
+            query: str,
+            dry_run: bool = True,
+            use_legacy_sql: bool = False
+    ) -> pd.DataFrame:
+        payload = {
+            "query": query,
+            "dry_run": dry_run,
+            "use_legacy_sql": use_legacy_sql,
+        }
+        return self._request("/custom_query", payload)
 
     @pandas_cache
     def get_ohlcv_around_time(
@@ -112,16 +133,3 @@ class QuantsightClient:
         }
         return self._request("/get_ohlcv_around_time", payload)
 
-    @pandas_cache
-    def custom_query(
-            self,
-            query: str,
-            dry_run: bool = True,
-            use_legacy_sql: bool = False
-    ) -> pd.DataFrame:
-        payload = {
-            "query": query,
-            "dry_run": dry_run,
-            "use_legacy_sql": use_legacy_sql,
-        }
-        return self._request("/custom_query", payload)
