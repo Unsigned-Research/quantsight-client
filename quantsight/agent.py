@@ -1,7 +1,9 @@
 import pandas as pd
 from langchain.agents import create_pandas_dataframe_agent
 from langchain.chat_models import ChatOpenAI
-from langchain.llms import OpenAI
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class QueryAgent:
@@ -11,6 +13,8 @@ class QueryAgent:
             self.open_api = ChatOpenAI(openai_api_key=openai_api_key, temperature=0, model_name=gpt_model_name)
 
     def preprocess_df(self, input_df: pd.DataFrame) -> pd.DataFrame:
+        logger.info(f"Pre-processing the DataFrame, column names are likely to change.")
+
         df = input_df.rename(columns={
             'ts': "timestamp",
             'open': "open_price",
@@ -28,6 +32,7 @@ class QueryAgent:
             df['day'] = df['timestamp'].dt.day
             df['year'] = df['timestamp'].dt.year
             df = df.set_index('timestamp').sort_index()
+            df['timestamp'] = df.index
 
         return df
 
