@@ -13,8 +13,7 @@ from .agent import QueryAgent
 class QuantsightClient(QueryAgent):
     def __init__(self, api_key: str, openai_api_key: str = None, cache_path: Path = None, **kwargs):
         super().__init__(openai_api_key, **kwargs)
-        self.base_url = "http://127.0.0.1:8000"
-        # self.base_url = "https://api.quantsight.dev"
+        self.base_url = "https://api.quantsight.dev"
         self.headers = {"Authorization": f"Bearer {api_key}"}
 
         file_location = Path(__file__).resolve().parent
